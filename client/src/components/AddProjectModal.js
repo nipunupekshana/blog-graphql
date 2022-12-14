@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaList } from "react-icons/fa";
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_CLIENT } from "../mutations/ClientMutations";
+import { ADD_PROJECT } from "../mutations/ProjectMutations";
 import { GET_PROJECTS } from "../queries/projectQuries";
 import { GET_CLIENTS } from "../queries/clientQueries";
 
@@ -11,14 +11,14 @@ export default function AddClientModal() {
   const [clientId, setClientId] = useState("");
   const [status, setStatus] = useState("new");
 
-  const [addProject] = useMutation(ADD_CLIENT, {
+  const [addProject] = useMutation(ADD_PROJECT, {
     variables: { name, description, status, clientId },
     update(cache, { data: { addProject } }) {
       const { projects } = cache.readQuery({ query: GET_PROJECTS });
 
       cache.writeQuery({
         query: GET_PROJECTS,
-        data: { clients: [...projects, addProject] },
+        data: { projects: [...projects, addProject] },
       });
     },
   });
@@ -32,7 +32,7 @@ export default function AddClientModal() {
       return alert("Please fill in all fields");
     }
 
-    addProject(name, clientId, status);
+    addProject(name,description, status,clientId);
 
     setName("");
     setDescription("");
@@ -93,7 +93,6 @@ export default function AddClientModal() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   >
-                    {" "}
                   </textarea>
                 </div>
                 <div className="mb-3">
@@ -105,8 +104,8 @@ export default function AddClientModal() {
                     onChange={(e) => setStatus(e.target.value)}
                   >
                     <option value="new">New</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
+                    <option value="progress">In Progress</option>
+                    <option value="compleated">Completed</option>
                   </select>
                 </div>
                 <div className="mb-3">
