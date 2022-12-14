@@ -1,13 +1,19 @@
-import { useState } from 'react';
-import { FaUser } from 'react-icons/fa';
-import { useMutation } from '@apollo/client';
-import { ADD_CLIENT } from '../mutations/ClientMutations';
-import { GET_CLIENTS } from '../queries/clientQueries';
+import { useState } from "react";
+import { FaUser } from "react-icons/fa";
+import { useMutation } from "@apollo/client";
+import { ADD_CLIENT } from "../mutations/ClientMutations";
+import { GET_CLIENTS } from "../queries/clientQueries";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from 'react-bootstrap/Form';
 
 export default function AddClientModal() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const [addClient] = useMutation(ADD_CLIENT, {
     variables: { name, email, phone },
@@ -24,95 +30,67 @@ export default function AddClientModal() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (name === '' || email === '' || phone === '') {
-      return alert('Please fill in all fields');
+    if (name === "" || email === "" || phone === "") {
+      return alert("Please fill in all fields");
     }
 
     addClient(name, email, phone);
 
-    setName('');
-    setEmail('');
-    setPhone('');
+    setName("");
+    setEmail("");
+    setPhone("");
   };
 
   return (
     <>
-      <button
-        type='button'
-        className='btn btn-secondary'
-        data-bs-toggle='modal'
-        data-bs-target='#addClientModal'
-      >
-        <div className='d-flex align-items-center'>
-          <FaUser className='icon' />
+      <Button variant="secondary" onClick={handleShow}>
+        <div className="d-flex align-items-center">
+          <FaUser className="icon" />
           <div>Add Client</div>
         </div>
-      </button>
+      </Button>
 
-      <div
-        className='modal fade'
-        id='addClientModal'
-        aria-labelledby='addClientModalLabel'
-        aria-hidden='true'
-      >
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h5 className='modal-title' id='addClientModalLabel'>
-                Add Client
-              </h5>
-              <button
-                type='button'
-                className='btn-close'
-                data-bs-dismiss='modal'
-                aria-label='Close'
-              ></button>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Client</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={onSubmit}>
+            <div className="mb-3">
+            <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                className="form-control"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
-            <div className='modal-body'>
-              <form onSubmit={onSubmit}>
-                <div className='mb-3'>
-                  <label className='form-label'>Name</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    id='name'
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div className='mb-3'>
-                  <label className='form-label'>Email</label>
-                  <input
-                    type='email'
-                    className='form-control'
-                    id='email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className='mb-3'>
-                  <label className='form-label'>Phone</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    id='phone'
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
+            <div className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
 
-                <button
-                  type='submit'
-                  data-bs-dismiss='modal'
-                  className='btn btn-secondary'
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+            <Button type="submit" variant="secondary" onClick={handleClose}>
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
